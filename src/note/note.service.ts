@@ -10,16 +10,12 @@ export class NoteService {
   constructor( @InjectRepository(Note) private repository: Repository<Note> ) {}
 
   async create(createdNote: CreateNoteDto): Promise<Note> {
-    const user = await this.repository.save(createdNote);
-    return await this.repository.save(user);
+    const note = await this.repository.save(createdNote);
+    return await this.repository.save(note);
   }
 
   async readAll(): Promise<Note[]> {
     return await this.repository.find();
-  }
-
-  findAll(): Promise<Note[]> {
-    return this.repository.find()
   }
 
   findOne(id: number): Promise<Note> {

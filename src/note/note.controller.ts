@@ -15,7 +15,7 @@ export class NoteController {
 
   @Post('create')
   async create(@Body() createdNote: CreateNoteDto): Promise<any> {
-    console.log('USER_CONTROLLER: ', createdNote);
+    console.log('NOTE_CONTROLLER: ', createdNote);
     return this.noteService.create(createdNote);
   }
 
