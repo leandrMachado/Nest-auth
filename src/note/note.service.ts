@@ -14,13 +14,16 @@ export class NoteService {
     return await this.repository.save(note);
   }
 
-  async readAll(): Promise<Note[]> {
-    return await this.repository.find();
+  findMyNotes(user_id: number): Promise<Note[]> {
+    return this.repository.find({
+      select: ['id', 'title', 'note', 'user_id'],
+      where: { user_id: String(user_id) }
+    })
   }
 
   findOne(id: number): Promise<Note> {
     return this.repository.findOne({
-      select: ['id', 'note'],
+      select: ['id', 'title', 'note', 'user_id'],
       where: { id }
     })
   }

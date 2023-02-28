@@ -10,4 +10,9 @@ export class CreateNoteDto {
     @IsString()
     @IsNotEmpty()
     note: string;
+
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    user_id: string;
 }

@@ -5,8 +5,9 @@ import { NoteModule } from './note/note.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Note } from './note/entities/note.entity';
-import { UserModule } from './user/user.module';
-import { User } from './user/entities/user.entity';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { User } from './user/entities/user.entity';
     }),
     TypeOrmModule.forFeature([Note, User]),
     NoteModule,
-    UserModule,
+    AuthModule,
+    UsersModule
   ],
   controllers: [AppController],
   providers: [AppService],

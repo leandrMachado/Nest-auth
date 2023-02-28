@@ -10,4 +10,8 @@ export class Note {
   
     @Column()
     note: string;
+
+    @Column()
+    user_id: string;
+
 }
