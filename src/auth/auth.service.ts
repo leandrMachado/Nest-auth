@@ -1,32 +1,40 @@
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { User } from 'src/users/entities/user.entity';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
+import { JwtModuleOptions, JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService, private jwtService: JwtService) {}
+    constructor(private userService: UserService, private jwtService: JwtService) {}
 
-  async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne(email);
-    if (user && bcrypt.compareSync(pass, user.password)){
-      const { password, ...result } = user;
-      return result;
+    async authenticateUser(email: string, pass: string): Promise<AuthUser> {
+        const user = await this.userService.findOneByEmail(email);
+
+        if (user && bcrypt.compareSync(pass, user.password)) {
+            const { password  , ...result } = user;
+            return result;
+        }
+
+        return null;
     }
-    return null;
-  }
 
-  async signin(user: any) {
-    const payload = { id: user.id, email: user.email, username: user.username };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
-  }
+    async signin(user: any): Promise<Token> {
+        const payload = { ...user }
+        return {
+            access_token: this.jwtService.sign(payload),
+        };
+    }
 
-  async signup(user: CreateUserDto): Promise<User> {
-    return this.usersService.signup(user)
-  }
+    async isUser(payload: AuthUser): Promise<any> {
+        const { id } = payload;
+        const user = await this.userService.findOne(id);
+
+        if (!user) {
+            throw new UnauthorizedException('User has been deleted');
+        }
+
+        return user
+    }
+
 
 }

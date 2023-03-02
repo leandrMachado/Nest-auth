@@ -1,34 +1,37 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { NoteModule } from './note/note.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { Note } from './note/entities/note.entity';
+import { User } from './entities/user.entity';
+import { UserService } from './user/user.service';
+import { UserController } from './user/user.controller';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { User } from './users/entities/user.entity';
+import { UserModule } from './user/user.module';
+import { JwtAuthGuard } from './auth/strategy/jwt-auth.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 6002,
-      username: 'root',
-      password: '123abc',
-      database: 'root',
-      entities: [Note, User],
+      database: 'mepsDB',
+      username: 'postgres',
+      password: '201022',
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([Note, User]),
-    NoteModule,
+    TypeOrmModule.forFeature([User]),
+    UserModule,
     AuthModule,
-    UsersModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, UserController],
+  providers: [
+    AppService, 
+    UserService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    }
+  ],
 })
-export class AppModule {
-  constructor(private dataSource: DataSource){}
-}
+export class AppModule {}

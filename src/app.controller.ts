@@ -1,27 +1,26 @@
-import { Controller, Request, Post, UseGuards, Get, Body } from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth/auth.service';
-import { JwtAuthGuard } from './auth/strategy/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/strategy/local-auth.guard';
+import { User } from './entities/user.entity';
+import { Public } from './set.metadata';
+import { CreateUserDto } from './user/user.dto';
+import { UserService } from './user/user.service';
 
 @Controller()
 export class AppController {
-    constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private userService: UserService) {}
 
-    @UseGuards(LocalAuthGuard)
-    @Post('auth/login')
-    async login(@Request() req) {
-        console.log(req.user)
-       return this.authService.signin(req.user);
-    }
+  @Post('auth/login')
+  @Public()
+  @UseGuards(LocalAuthGuard)
+  async login(@Request() req): Promise<any> {
+    return this.authService.signin(req.user)
+  }
 
-    @Post('auth/signup')
-    async signup(@Request() req) {
-        return this.authService.signup(req.body)
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @Get('profile')
-    getProfile(@Request() req) {
-        return req.user;
-    }
+  @Post('auth/signup')
+  @Public()
+  async create(@Body() createdUser: CreateUserDto): Promise<any> {
+    return this.userService.create(createdUser);
+  }
+  
 }
